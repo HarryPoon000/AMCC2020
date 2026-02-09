@@ -1,4 +1,5 @@
 let x = 0, y = 0;
+let targetX = 0, targetY = 0;
 
 function setup() {
     createCanvas(400, 400);
@@ -7,8 +8,13 @@ function setup() {
 function draw() {
     background(220, 90);
 
-    x = lerp(x, mouseX, 0.1);
-    y = lerp(y, mouseY, 0.1);
-    ellipse(x, y, 30, 30);
+    if (dist(x, y, targetX, targetY) < 2) {
+        targetX = random(width)
+        targetY = random(height)
+    }
 
+    x = lerp(x, targetX, 0.1);
+    y = lerp(y, targetY, 0.1);
+    circle(x, y, 20);
 }
+
