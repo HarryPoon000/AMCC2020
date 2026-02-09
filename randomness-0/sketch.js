@@ -8,7 +8,7 @@ function setup() {
 }
 
 function draw() {
-    background(255, 15);
+    background(255, 25);
     for (let i = 0; i < 600; i++) {
         // choose a random point inside the circle
         let angle = random(TWO_PI);
