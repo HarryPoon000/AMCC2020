@@ -4,7 +4,10 @@ function setup() {
     createCanvas(800, 600);
 
     for (i = 0; i < 20; i++) {
-        circles.push(new MovingCircle())
+        circles.push(new MovingCircle({
+            step: random(0.0025, 0.0075),
+            step_rgb: random(0.01, 0.03)
+        }))
     }
 }
 
@@ -18,7 +21,8 @@ function draw() {
 
 class MovingCircle {
 
-    constructor(r = 50, step = 0.005, step_r = 0.003, step_rgb = 0.02) {
+    constructor({r = 50, step = 0.005, step_r = 0.003, step_rgb = 0.02}) {
+        console.log(step)
         this.t = random(1000);
         this.step = step
         this.x = noise(this.t) * width;
