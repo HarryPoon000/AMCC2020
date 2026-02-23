@@ -14,21 +14,20 @@ function setup() {
 
 function draw() {
   // circle(width/2, height/2, 400)
-  clear()
+  // clear()
+  background(255, 90)
   stroke(20, 50, 120);
   beginShape();
   let radius = 100;
-  for (let angle = 0; angle <= 360 * 5; angle += 6) {
+  for (let angle = 0; angle <= 360 * 4; angle += 6) {
     radius += noise(t);
-    let rad = radians(angle);
+    let rad = radians(angle) + t * 5;
     r_noise = radius * (0.2 + noise(t + rad * 0.01, rad * 0.4) * 2)
     let x = centX + r_noise * cos(rad);
     let y = centY + r_noise * sin(rad);
-    // strokeWeight(7);
-    // point(x, y);
-    // strokeWeight(3);
     vertex(x, y);
-    t += 0.0001
+    // vertex(centX, centY)
+    t += map(mouseX, 0, width, 0.00005, 0.0002)
   }
   endShape();
 }
