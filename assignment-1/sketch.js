@@ -17,19 +17,31 @@ function setup() {
   // noLoop()
 }
 
+// get the sign of a number
+function sign(x) {
+  if (x == 0) { 
+    return x
+  }
+  return x / Math.abs(x)
+}
+
 function draw() {
   background(240);
 
   mainDots.forEach((mainDot) => {
     bgDots.forEach((bgDot) => {
-      if (Math.abs(bgDot.x - mainDot.x) < 70) {
-        bgDot.x += int(((bgDot.x - mainDot.x)/800 + 0.4)**2)
-      }
-      if (Math.abs(bgDot.y - mainDot.y) < 70) {
-        bgDot.y += int(((bgDot.y - mainDot.y)/800 + 0.4)**2)
+      // https://p5js.org/reference/p5/dist/
+      let distance = dist(bgDot.x, bgDot.y, mainDot.x, mainDot.y);
+      if (distance < 40) {
+        bgDot.x += int(width / (((bgDot.x - mainDot.x)) ** 2)) * sign(bgDot.x - mainDot.x)
+        bgDot.y += int(height / (((bgDot.y - mainDot.y)) ** 2)) * sign(bgDot.y - mainDot.y)
       }
     })
   })
+
+  // mainDots[0].x = lerp(mainDots[0].x, mainDots[1].x, 0.0002)
+  // mainDots[0].y = lerp(mainDots[0].y, mainDots[1].y, 0.0002)
+  
 
   bgDots.forEach((bgDot) => {
     bgDot.draw();
@@ -66,8 +78,9 @@ class BGDot extends Dot {
   }
 
   draw() {
-    this.x += int(map(noise(this.x + this.base_offset, Date.now() / 10 + this.base_offset), 0.3, 0.7, -1, 1.2))
-    this.y += int(map(noise(this.y, Date.now() / 10 + this.base_offset + 20), 0.3, 0.7, -1, 1.2))
+    // use noise to simulate random, small local movements
+    this.x += int(map(noise(this.x + this.base_offset, Date.now() / 10 + this.base_offset), 0.3, 0.7, -1, 1.25))
+    this.y += int(map(noise(this.y, Date.now() / 10 + this.base_offset + 20), 0.3, 0.7, -1, 1.25))
     if (this.x > width) {
       this.x %= width
     } else if (this.x < 0) {
