@@ -55,13 +55,20 @@ function draw() {
     })
   })
 
-  if (dist(mainDots[0].x, mainDots[0].y, mainDots[1].x, mainDots[1].y) >= 10){
+  let mainDotDist = dist(mainDots[0].x, mainDots[0].y, mainDots[1].x, mainDots[1].y)
+  if (mainDotDist >= 10){
     mainDots[0].x = lerp(mainDots[0].x, mainDots[1].x, 0.0008)
     mainDots[0].y = lerp(mainDots[0].y, mainDots[1].y, 0.0008)
   
     mainDots[1].x = lerp(mainDots[1].x, mainDots[0].x, 0.0008)
     mainDots[1].y = lerp(mainDots[1].y, mainDots[0].y, 0.0008)
   }
+
+  let vol_thunder = map(mainDotDist, 0, (width**2 + height**2)**0.5, 0.2, 0.8)
+  let vol_rain = vol_thunder / 5 * 3 // maintain the ratio
+
+  thunderBG.setVolume(vol_thunder)
+  noise1.amp(vol_rain)
 
   bgDots.forEach((bgDot) => {
     bgDot.draw();
@@ -187,6 +194,10 @@ class ThunderBackground{
         this.timer = Date.now() + this.duration;
       }
     }
+  }
+
+  setVolume(vol) {
+    this.env.setRange(vol, 0)
   }
 }
 
