@@ -1,11 +1,11 @@
-let bgDots = [], mainDots = [];
+let bgDots = [], mainDots = [], thunderBG, thunderRain;
 
 function setup() {
   createCanvas(800, 600);
   frameRate(60);
 
   // create random "dots"
-  for (let i = 0; i < 2000; i++) {
+  for (let i = 0; i < 1000; i++) {
     bgDots.push(new BGDot({}))
   }
   // create random "dots"
@@ -14,7 +14,8 @@ function setup() {
   // blue dot at upper left eighth 
   mainDots.push(new MainDot(random(width / 4), random(height / 4), color(60, 0, 255)))
 
-  // noLoop()
+  thunderBG = new ThunderBackground(150, prob = 0.02);
+  thunderRain = new ThunderRain(1500, 150);
 }
 
 // get the sign of a number
@@ -26,7 +27,8 @@ function sign(x) {
 }
 
 function draw() {
-  background(220);
+  thunderBG.draw();
+  thunderRain.draw();
 
   mainDots.forEach((mainDot) => {
     bgDots.forEach((bgDot) => {
@@ -36,6 +38,13 @@ function draw() {
         bgDot.x += int((bgDot.x - mainDot.x) / (distance ** 2) * 40)
         bgDot.y += int((bgDot.y - mainDot.y) / (distance ** 2) * 40)
       }
+
+      // // mouse push bg dots (potentially useful?)
+      // let distance_2 = dist(bgDot.x, bgDot.y, mouseX, mouseY);
+      // if (distance_2 < 40) {
+      //   bgDot.x += int((bgDot.x - mouseX) / (distance_2 ** 2) * 40)
+      //   bgDot.y += int((bgDot.y - mouseY) / (distance_2 ** 2) * 40)
+      // }
     })
   })
 
@@ -138,6 +147,68 @@ class MainDot extends Dot {
     super.draw()
   }
 }
+
+class ThunderBackground{
+  constructor(duration, prob) {
+    this.duration = duration; // duration in millis
+    this.prob = prob;
+    this.timer = Date.now();
+  }
+
+  draw() {
+    if (this.timer > Date.now()) {
+      background(255);
+    } else {
+      background(200);
+      if (random() < this.prob) {
+        this.timer = Date.now() + this.duration;
+      }
+    }
+  }
+}
+
+class ThunderRain{
+  constructor(amount, refresh_period) {
+    this.amount = amount; // number of particles
+    this.dots = []
+    for (let i = 0; i < this.amount; i++) {
+      this.dots.push(new _ThunderRainDot(int(refresh_period + random(100)))) // 0 to 100 millis differenct in refresh period
+    }
+  }
+
+  draw() {
+    for (let i = 0; i < this.amount; i++) {
+      this.dots[i].draw()
+    }
+  }
+}
+
+class _ThunderRainDot {
+  constructor(refresh_period) {
+    this.timer = Date.now() - random(1500); // 0 to 1500 millis difference in the 'phase' of a rain dot
+    this.refresh_period = refresh_period;
+    this.x = random(width)
+    this.y = random(height)
+  }
+
+  draw(){
+    if (this.timer < Date.now()) {
+      this.x = random(width)
+      this.y = random(height)
+      this.timer += this.refresh_period
+    } 
+
+
+    push()
+    translate(this.x, this.y)
+    noStroke()
+    fill(50, 50)
+    circle(0, 0, 5)
+    pop()
+  }
+}
+
+
 
 // Source - https://stackoverflow.com/a/42906936
 // Modified to work with 2d arrays
