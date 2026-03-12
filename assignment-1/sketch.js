@@ -5,7 +5,7 @@ function setup() {
   frameRate(60);
 
   // create random "dots"
-  for (let i = 0; i < 1000; i++) {
+  for (let i = 0; i < 800; i++) {
     bgDots.push(new BGDot({}))
   }
   // create random "dots"
@@ -15,7 +15,7 @@ function setup() {
   mainDots.push(new MainDot(random(width / 4), random(height / 4), color(60, 0, 255)))
 
   thunderBG = new ThunderBackground(150, prob = 0.02);
-  thunderRain = new ThunderRain(1500, 150);
+  thunderRain = new ThunderRain(1000, 100);
 }
 
 // get the sign of a number
@@ -193,8 +193,10 @@ class _ThunderRainDot {
 
   draw(){
     if (this.timer < Date.now()) {
-      this.x = random(width)
-      this.y = random(height)
+      do {
+        this.x = random(width)
+        this.y = random(height)
+      } while(dist(this.x, this.y, mainDots[0].x, mainDots[0].y) < 40 || dist(this.x, this.y, mainDots[1].x, mainDots[1].y) < 40)
       this.timer += this.refresh_period
     } 
 
@@ -202,13 +204,11 @@ class _ThunderRainDot {
     push()
     translate(this.x, this.y)
     noStroke()
-    fill(50, 50)
+    fill(20, 50)
     circle(0, 0, 5)
     pop()
   }
 }
-
-
 
 // Source - https://stackoverflow.com/a/42906936
 // Modified to work with 2d arrays
