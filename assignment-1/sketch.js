@@ -133,8 +133,6 @@ class MainDot extends Dot {
   }
 
   draw() {
-    // this.x += int(map(noise(this.x + this.base_offset, Date.now()/10 + this.base_offset), 0.3, 0.7, -1, 1))
-    // this.y += int(map(noise(this.y, Date.now()/10 + this.base_offset + 20), 0.3, 0.7, -1, 1))
     if (this.x > width) {
       this.x %= width
     } else if (this.x < 0) {
