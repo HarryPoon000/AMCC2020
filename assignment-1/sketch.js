@@ -39,9 +39,13 @@ function draw() {
     })
   })
 
-  // mainDots[0].x = lerp(mainDots[0].x, mainDots[1].x, 0.0002)
-  // mainDots[0].y = lerp(mainDots[0].y, mainDots[1].y, 0.0002)
+  if (dist(mainDots[0].x, mainDots[0].y, mainDots[1].x, mainDots[1].y) >= 20){
+    mainDots[0].x = lerp(mainDots[0].x, mainDots[1].x, 0.0004)
+    mainDots[0].y = lerp(mainDots[0].y, mainDots[1].y, 0.0004)
   
+    mainDots[1].x = lerp(mainDots[1].x, mainDots[0].x, 0.0004)
+    mainDots[1].y = lerp(mainDots[1].y, mainDots[0].y, 0.0004)
+  }
 
   bgDots.forEach((bgDot) => {
     bgDot.draw();
