@@ -1,4 +1,6 @@
 let bgDots = [], mainDots = [], thunderBG, thunderRain;
+let noise1;
+
 
 function setup() {
   createCanvas(800, 600);
@@ -15,7 +17,12 @@ function setup() {
   mainDots.push(new MainDot(random(width / 4), random(height / 4), color(60, 0, 255)))
 
   thunderBG = new ThunderBackground(150, prob = 0.02);
-  thunderRain = new ThunderRain(1000, 100);
+  thunderRain = new ThunderRain(1000, 100, 100);
+
+  // for rain noise
+  noise1 = new p5.Noise('brown');
+  noise1.amp(0.3)
+  noise1.start();
 }
 
 // get the sign of a number
@@ -49,11 +56,11 @@ function draw() {
   })
 
   if (dist(mainDots[0].x, mainDots[0].y, mainDots[1].x, mainDots[1].y) >= 10){
-    mainDots[0].x = lerp(mainDots[0].x, mainDots[1].x, 0.0004)
-    mainDots[0].y = lerp(mainDots[0].y, mainDots[1].y, 0.0004)
+    mainDots[0].x = lerp(mainDots[0].x, mainDots[1].x, 0.0008)
+    mainDots[0].y = lerp(mainDots[0].y, mainDots[1].y, 0.0008)
   
-    mainDots[1].x = lerp(mainDots[1].x, mainDots[0].x, 0.0004)
-    mainDots[1].y = lerp(mainDots[1].y, mainDots[0].y, 0.0004)
+    mainDots[1].x = lerp(mainDots[1].x, mainDots[0].x, 0.0008)
+    mainDots[1].y = lerp(mainDots[1].y, mainDots[0].y, 0.0008)
   }
 
   bgDots.forEach((bgDot) => {
@@ -153,10 +160,26 @@ class ThunderBackground{
     this.duration = duration; // duration in millis
     this.prob = prob;
     this.timer = Date.now();
+
+    // copied from lecture notes: T5 exercise 4
+    this.noise = new p5.Noise('pink');
+    this.noise.start();
+
+    this.env = new p5.Envelope();
+    this.env.setADSR(0.0, 0.5, 0.3, 0.4);
+    this.env.setRange(0.5, 0.0);
+
+    this.filt = new p5.Filter('lowpass');
+    this.filt.freq(1000);
+
+    this.noise.disconnect();
+    this.noise.connect(this.filt);
+    this.noise.amp(this.env);
   }
 
   draw() {
     if (this.timer > Date.now()) {
+      setTimeout(() => this.env.play(), random(100) + 50) // play audio 50 to 150 milliseconds after flash
       background(255);
     } else {
       background(200);
@@ -168,11 +191,12 @@ class ThunderBackground{
 }
 
 class ThunderRain{
-  constructor(amount, refresh_period) {
+  constructor(amount, refresh_period, coolddown) {
     this.amount = amount; // number of particles
     this.dots = []
     for (let i = 0; i < this.amount; i++) {
-      this.dots.push(new _ThunderRainDot(int(refresh_period + random(100)))) // 0 to 100 millis differenct in refresh period
+      // 100 to 150 % of refresh period and cooldown
+      this.dots.push(new _ThunderRainDot(int(refresh_period + random(refresh_period)/2), int(coolddown + random(coolddown)/2))) 
     }
   }
 
@@ -184,9 +208,10 @@ class ThunderRain{
 }
 
 class _ThunderRainDot {
-  constructor(refresh_period) {
+  constructor(refresh_period, coolddown) {
     this.timer = Date.now() - random(1500); // 0 to 1500 millis difference in the 'phase' of a rain dot
     this.refresh_period = refresh_period;
+    this.coolddown = coolddown;
     this.x = random(width)
     this.y = random(height)
   }
@@ -197,10 +222,13 @@ class _ThunderRainDot {
         this.x = random(width)
         this.y = random(height)
       } while(dist(this.x, this.y, mainDots[0].x, mainDots[0].y) < 40 || dist(this.x, this.y, mainDots[1].x, mainDots[1].y) < 40)
-      this.timer += this.refresh_period
+      this.timer += this.refresh_period + this.coolddown
     } 
 
-
+    if (this.timer - this.refresh_period > Date.now()) {
+      // dont draw within the cooldown period
+      return
+    }
     push()
     translate(this.x, this.y)
     noStroke()
