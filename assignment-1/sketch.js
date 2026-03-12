@@ -26,20 +26,20 @@ function sign(x) {
 }
 
 function draw() {
-  background(240);
+  background(220);
 
   mainDots.forEach((mainDot) => {
     bgDots.forEach((bgDot) => {
       // https://p5js.org/reference/p5/dist/
       let distance = dist(bgDot.x, bgDot.y, mainDot.x, mainDot.y);
       if (distance < 40) {
-        bgDot.x += int(width / (((bgDot.x - mainDot.x)) ** 2)) * sign(bgDot.x - mainDot.x)
-        bgDot.y += int(height / (((bgDot.y - mainDot.y)) ** 2)) * sign(bgDot.y - mainDot.y)
+        bgDot.x += int((bgDot.x - mainDot.x) / (distance ** 2) * 40)
+        bgDot.y += int((bgDot.y - mainDot.y) / (distance ** 2) * 40)
       }
     })
   })
 
-  if (dist(mainDots[0].x, mainDots[0].y, mainDots[1].x, mainDots[1].y) >= 20){
+  if (dist(mainDots[0].x, mainDots[0].y, mainDots[1].x, mainDots[1].y) >= 10){
     mainDots[0].x = lerp(mainDots[0].x, mainDots[1].x, 0.0004)
     mainDots[0].y = lerp(mainDots[0].y, mainDots[1].y, 0.0004)
   
